@@ -1,19 +1,51 @@
-<?php
+<?php 
 namespace App\Controllers;
 
 use App\Models\Coba;
 
 class CobaController extends BaseController {
+    protected $coba;
+
+    public function __construct() {
+        $this->coba = new Coba();
+    }
+
     public function index() {
-        $model = new Coba();
-        $data['items'] = $model->getAllItems();
+        $data['items'] = $this->coba->getAllItems();
         return view('coba', $data);
     }
 
     public function add() {
-        $model = new Coba();
         $value = $this->request->getPost('value');
-        $model->addItem($value);
+        
+        if (!$value) {
+            return $this->response->setJSON(['error' => 'Value is required']);
+        }
+
+        $this->coba->addItem($value);
         return redirect()->to('/coba');
+    }
+
+    public function update() {
+        $id = $this->request->getPost('id');
+        $value = $this->request->getPost('value');
+        
+        if (!$id || !$value) {
+            return $this->response->setJSON(['error' => 'ID and Value are required']);
+        }
+
+        $this->coba->updateItem($id, $value);
+        return redirect()->to('/coba'); 
+    }
+
+    public function delete() {
+        $id = $this->request->getPost('id');
+        
+        if (!$id) {
+            return $this->response->setJSON(['error' => 'ID is required']);
+        }
+
+        $this->coba->deleteItem($id);
+        return redirect()->to('/coba');  
     }
 }
