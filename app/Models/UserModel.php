@@ -6,11 +6,15 @@ use CodeIgniter\Model;
 
 class UserModel extends Model
 {
-    protected $table = 'users';
-    protected $primaryKey = 'id';
+    protected $table = '"user"'; // Enclose the table name in double quotes
+    protected $primaryKey = 'username'; // Primary key
+    protected $allowedFields = ['username', 'password', 'name']; // Allowed fields
 
-    protected $allowedFields = ['name', 'email', 'password', 'created_at', 'updated_at'];
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    public function validateUser($username, $password)
+    {
+        $hashedPassword = md5($password); // Hash password for validation
+        return $this->where('username', $username)
+                    ->where('password', $hashedPassword)
+                    ->first();
+    }
 }
